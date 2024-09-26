@@ -1,5 +1,5 @@
 async function fetchInventory() {
-    const url = '你的库存接口URL'; // 替换为你的库存接口URL
+    const url = 'https://www.apple.com/hk-zh/shop/fulfillment-messages?searchNearby=true&parts.0=MWWP3ZP/A&option.0=MWX13ZP/A,MXM23FE/A&store=R428'; // 替换为你的库存接口URL
     try {
         const response = await fetch(url);
         const data = await response.json();

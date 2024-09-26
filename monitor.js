@@ -1,19 +1,41 @@
-async function fetchInventory() {
-    const url = 'https://www.apple.com/hk-zh/shop/fulfillment-messages?searchNearby=true&parts.0=MWWP3ZP/A&option.0=MWX13ZP/A,MXM23FE/A&store=R428'; // 替换为你的库存接口URL
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
+/**
+ * @fileoverview 库存查询示例，构建 HTTP 请求
+ * 并处理响应。
+ *
+ */
 
-        const stores = data.body.content.pickupMessage.stores;
-        
-        stores.forEach(store => {
-            const storeName = store.storeName;
-            const pickupTime = store.partsAvailability.Z0YQ.pickupSearchQuote;
-            console.log(`店名: ${storeName}, 取货时间: ${pickupTime}`);
-        });
-    } catch (error) {
-        console.error('获取库存失败:', error);
+const url = "https://www.apple.com/hk-zh/shop/fulfillment-messages/"; // 库存查询的 URL
+const method = "GET"; // 使用 GET 方法查询库存
+const headers = {"Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6","Cache-Control":"no-cache"}; // 可根据需要设置头部信息
+const params = {
+    searchNearby: true,
+    "parts.0": "MWWP3ZP/A",
+    "option.0": ["MWX13ZP/A,MXL53FE/A","MWX13ZP/A,MXL33FE/A","MWX13ZP/A,MU9R3FE/A","MWX13ZP/A,MXU13FE/A","MWX13ZP/A,MYJD3FE/A"]
+}; // 查询参数
+
+// 构建查询字符串
+const searchParams = new URLSearchParams();
+for (const key in params) {
+    if (Array.isArray(params[key])) {
+        params[key].forEach(value => searchParams.append(key, value));
+    } else {
+        searchParams.append(key, params[key]);
     }
 }
 
-fetchInventory();
+const myRequest = {
+    url: url + "?" + new URLSearchParams(params).toString(), // 构建带查询参数的 URL
+    method: method, // 可选，默认为 GET。
+    headers: headers // 可选。
+};
+
+$task.fetch(myRequest).then(response => {
+    // response.statusCode, response.headers, response.body
+    console.log(response.body);
+    $notify("库存查询", "成功", response.body); // 成功处理！
+    $done();
+}, reason => {
+    // reason.error
+    $notify("库存查询", "错误", reason.error); // 错误处理！
+    $done();
+});

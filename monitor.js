@@ -30,9 +30,10 @@ const myRequest = {
 };
 
 $task.fetch(myRequest).then(response => {
-    // response.statusCode, response.headers, response.body
-    console.log(response.body);
-    $notify("库存查询", "成功", response.body); // 成功处理！
+    const responseBody = JSON.parse(response.body); // 解析响应体
+    const desiredData = responseBody.body.content.pickupMessage.stores[0].partsAvailability.Z0YQ.pickupSearchQuote; // 提取所需的数据，假设数据在 someKey 中
+    console.log(desiredData);
+    $notify("库存查询", "成功", `提取的数据: ${desiredData}`); // 成功处理并展示提取的数据
     $done();
 }, reason => {
     // reason.error
